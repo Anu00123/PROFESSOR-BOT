@@ -1,6 +1,6 @@
 import re, asyncio, time, shutil, psutil, os, sys
 from pyrogram import Client, filters, enums
-from pyrogram.types import *
+from pyrogram.types import ChatJoinRequest, message, *
 from info import BOT_START_TIME, ADMINS
 from utils import humanbytes  
 
@@ -35,5 +35,18 @@ async def stop_button(bot, message):
     await msg.edit("**✅️ 𝙱𝙾𝚃 𝙸𝚂 𝚁𝙴𝚂𝚃𝙰𝚁𝚃𝙴𝙳. 𝙽𝙾𝚆 𝚈𝙾𝚄 𝙲𝙰𝙽 𝚄𝚂𝙴 𝙼𝙴**")
     os.execl(sys.executable, sys.executable, *sys.argv)
 
+
+@Client.on_chat_join_request(filters.group | filters.channel)
+async def approve(client, message: ChatJoinRequest):
+    chat = message.chat
+    user = message.from_user
+    try:
+        await client.approve_chat_join_request(chat_id=chat.id, user_id=user.id)
+        add_group(chat.id)
+        img = random.choice(gif)
+        await client.send_video(chat_id=user.id, video=img)
+        add_user(user.id)
+    except Exception as err:
+        print(str(err))
 
 
